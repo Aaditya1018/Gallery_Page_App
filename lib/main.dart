@@ -19,7 +19,6 @@ class MyApp extends StatelessWidget {
         scaffoldBackgroundColor: const Color(0xFF0C0C0F),
         useMaterial3: true,
       ),
-      // Force dark even if the device is light
       themeMode: ThemeMode.dark,
       home: const GalleryPage(),
     );
@@ -41,8 +40,6 @@ class _GalleryPageState extends State<GalleryPage> {
     'assets/6.jpg',
   ];
 
-  late final List<bool> favorites =
-  List<bool>.generate(imagePaths.length, (_) => false);
 
   PreferredSizeWidget _gradientAppBar() {
     return AppBar(
@@ -90,15 +87,11 @@ class _GalleryPageState extends State<GalleryPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  ClipRRect(
-                    borderRadius:
-                    const BorderRadius.vertical(top: Radius.circular(16)),
-                    child: Image.asset(
-                      imagePaths[index],
-                      height: 200,
-                      fit: BoxFit.cover,
-                    ),
-                  ),
+                        child: Image.asset(
+                          height: 200,
+                          fit: BoxFit.cover,
+                        ),
+                      ),
                   Padding(
                     padding:
                     const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -123,7 +116,6 @@ class _GalleryPageState extends State<GalleryPage> {
                                 : Colors.white70,
                           ),
                           onPressed: () => setState(
-                                  () => favorites[index] = !favorites[index]),
                         ),
                       ],
                     ),
