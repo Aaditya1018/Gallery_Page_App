@@ -27,6 +27,7 @@ class MyApp extends StatelessWidget {
 
 class GalleryPage extends StatefulWidget {
   const GalleryPage({super.key});
+
   @override
   State<GalleryPage> createState() => _GalleryPageState();
 }
@@ -40,6 +41,13 @@ class _GalleryPageState extends State<GalleryPage> {
     'assets/6.jpg',
   ];
 
+  late List<bool> favorites;
+
+  @override
+  void initState() {
+    super.initState();
+    favorites = List<bool>.generate(imagePaths.length, (_) => false);
+  }
 
   PreferredSizeWidget _gradientAppBar() {
     return AppBar(
@@ -76,6 +84,9 @@ class _GalleryPageState extends State<GalleryPage> {
           itemCount: imagePaths.length,
           physics: const BouncingScrollPhysics(),
           itemBuilder: (context, index) {
+            final path = imagePaths[index];
+            final heroTag = 'gallery_image_$index';
+
             return Card(
               color: const Color(0x1AFFFFFF),
               margin: const EdgeInsets.only(bottom: 16),
@@ -87,11 +98,29 @@ class _GalleryPageState extends State<GalleryPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (_) =>
+                              ImageDetailPage(path: path, heroTag: heroTag),
+                        ),
+                      );
+                    },
+                    child: Hero(
+                      tag: heroTag,
+                      child: ClipRRect(
+                        borderRadius: const BorderRadius.vertical(
+                          top: Radius.circular(16),
+                        ),
                         child: Image.asset(
+                          path,
                           height: 200,
                           fit: BoxFit.cover,
                         ),
                       ),
+                    ),
+                  ),
                   Padding(
                     padding:
                     const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -116,6 +145,8 @@ class _GalleryPageState extends State<GalleryPage> {
                                 : Colors.white70,
                           ),
                           onPressed: () => setState(
+                                () => favorites[index] = !favorites[index],
+                          ),
                         ),
                       ],
                     ),
@@ -124,6 +155,49 @@ class _GalleryPageState extends State<GalleryPage> {
               ),
             );
           },
+        ),
+      ),
+    );
+  }
+}
+
+class ImageDetailPage extends StatelessWidget {
+  const ImageDetailPage({
+    super.key,
+    required this.path,
+    required this.heroTag,
+  });
+
+  final String path;
+  final String heroTag;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: const Color(0xFF0C0C0F),
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
+      ),
+      body: Center(
+        child: GestureDetector(
+          onTap: () => Navigator.of(context).pop(),
+          child: Hero(
+            tag: heroTag,
+            child: InteractiveViewer(
+              minScale: 1,
+              maxScale: 4,
+              clipBehavior: Clip.none,
+              child: Image.asset(
+                path,
+                fit: BoxFit.contain,
+              ),
+            ),
+          ),
         ),
       ),
     );
